@@ -1,0 +1,42 @@
+[
+    {
+        "id": 1,
+        "orgao": "IBRAM",
+        "processo": "00391-00021973/2017-46",
+        "assunto": "Recuperação ambiental do CCE",
+        "periodicidade": "Recomposição (Anual - Maio) / Reabilitação (Semestral - Maio e Novembro)",
+        "pendencias": "1) Justificar mudança de metodologia nas Áreas 1 a 4;\n2) Mapear Área 17;\n3) Esclarecer polígono da \"Figura 4\";\n4) Esclarecer área do deck;\n5) Definir se áreas coloridas são recomposição ou reabilitação.",
+        "prazo": "Maio e Novembro (Recorrente)",
+        "status": "Pendente"
+    },
+    {
+        "id": 2,
+        "orgao": "IBRAM",
+        "processo": "00391-00022001/2017-79",
+        "assunto": "Licença definitiva (Drenagem)",
+        "periodicidade": "Única",
+        "pendencias": "Requerer licença com documentação completa.",
+        "prazo": "16/07/2026",
+        "status": "Pendente"
+    },
+    {
+        "id": 3,
+        "orgao": "IBRAM",
+        "processo": "0391-000512/2017",
+        "assunto": "PRAD Erosões 1 a 5",
+        "periodicidade": "Única (fase atual)",
+        "pendencias": "1) Apresentar arquivos geoespaciais das poligonais;\n2) Definir indicadores de reabilitação;\n3) Avaliar necessidade de curvas de nível na Erosão 4.",
+        "prazo": "27/06/2026",
+        "status": "Pendente"
+    },
+    {
+        "id": 4,
+        "orgao": "ADASA",
+        "processo": "0197-001463/2016",
+        "assunto": "Outorga definitiva de lançamento",
+        "periodicidade": "Monitoramento passivo",
+        "pendencias": "Aguardar manifestação do órgão.",
+        "prazo": "Sem prazo determinado",
+        "status": "Aguardando Órgão"
+    }
+]

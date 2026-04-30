@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Processos Regulatórios RK</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        heading: ['Outfit', 'sans-serif'],
+                    },
+                    animation: {
+                        'float': 'float 8s ease-in-out infinite',
+                        'float-delayed': 'float 8s ease-in-out 4s infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0) scale(1)' },
+                            '50%': { transform: 'translateY(-20px) scale(1.05)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            scroll-behavior: smooth;
+        }
+
+        h1, h2, h3, h4, h5, h6, .font-heading {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .modal {
+            transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .modal-container {
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        body.modal-active {
+            overflow: hidden;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.8);
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(255, 255, 255, 1);
+            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,1);
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(156, 163, 175, 0.4);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(107, 114, 128, 0.7);
+        }
+        
+        .loader {
+            border: 3px solid rgba(243, 244, 246, 0.8);
+            border-top: 3px solid #6366f1;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+
+
+
+        .custom-input {
+            transition: all 0.3s ease;
+        }
+        
+        .custom-input:focus {
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+    </style>
+</head>
+
+<body class="text-slate-800 antialiased min-h-screen flex flex-col relative">
+
+    <!-- Background Otimizado para Performance -->
+    <div class="fixed inset-0 z-[-1] pointer-events-none" style="background: radial-gradient(circle at 10% 20%, rgba(224, 231, 255, 0.6) 0%, transparent 40%), radial-gradient(circle at 90% 50%, rgba(250, 232, 255, 0.6) 0%, transparent 40%), radial-gradient(circle at 50% 90%, rgba(224, 242, 254, 0.6) 0%, transparent 40%), #f8fafc;">
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9InJnYmEoMCwwLDAsMC4wMykiLz48L3N2Zz4=')] opacity-30"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="sticky top-0 z-40 glass shadow-sm transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-4 w-full md:w-auto group cursor-pointer">
+                <div class="relative">
+                    <div class="absolute inset-0 bg-slate-800 rounded-xl blur opacity-30 group-hover:opacity-50 transition duration-300"></div>
+                    <div class="relative bg-slate-900 p-3 rounded-xl text-white shadow-lg transform group-hover:scale-105 transition duration-300">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                    </div>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-black font-heading text-slate-900 tracking-tight leading-tight transition-colors">ACTech <span class="font-medium text-slate-600">Systems</span></h1>
+                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-0.5">Condomínio Rural RK</p>
+                </div>
+            </div>
+            <div class="w-full md:w-[400px] relative group">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
+                    <svg class="h-5 w-5 text-slate-400 group-focus-within:text-indigo-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </div>
+                <div class="absolute inset-0 bg-white/40 rounded-2xl blur-md group-focus-within:bg-indigo-100/50 transition-all duration-300"></div>
+                <input type="text" id="searchInput" class="relative block w-full pl-11 pr-4 py-3 border border-slate-200/80 rounded-2xl leading-5 bg-white/70 backdrop-blur-md placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 focus:bg-white sm:text-sm transition-all duration-300 shadow-[0_2px_10px_-3px_rgba(0,0,0,0.05)] hover:bg-white custom-input" placeholder="Buscar por número, assunto, órgão...">
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full relative z-10">
+        <!-- Dashboard Header -->
+        <div class="mb-10 flex flex-col md:flex-row md:justify-between md:items-end gap-6">
+            <div class="space-y-1">
+                <h2 class="text-4xl sm:text-5xl font-extrabold font-heading text-slate-900 tracking-tight">Painel de Controle</h2>
+                <p class="text-base text-slate-500 font-medium">Gerenciamento e acompanhamento dinâmico de processos ambientais.</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-3">
+                <div class="inline-flex items-center text-sm text-slate-600 bg-white/80 backdrop-blur-md px-5 py-2.5 rounded-2xl shadow-[0_2px_10px_-3px_rgba(0,0,0,0.05)] border border-white font-medium transition-all hover:shadow-md">
+                    Total de Processos: 
+                    <span id="totalProcessos" class="ml-2 px-3 py-1 rounded-lg bg-slate-200 text-slate-800 font-bold transition-all duration-300 transform">0</span>
+                </div>
+
+                <button onclick="openNewModal()" class="group relative px-6 py-2.5 rounded-2xl font-bold text-sm shadow-[0_8px_20px_-6px_rgba(15,23,42,0.4)] transition-all duration-300 hover:shadow-[0_12px_25px_-6px_rgba(15,23,42,0.5)] hover:-translate-y-1 bg-slate-900 text-white flex items-center justify-center gap-2 overflow-hidden border border-slate-800">
+                    <span class="absolute inset-0 w-full h-full bg-slate-800 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                    <svg class="w-4 h-4 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    <span class="relative z-10">Novo Processo</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Initial Loader -->
+        <div id="loader" class="flex flex-col items-center justify-center py-24 glass-card rounded-3xl">
+            <div class="loader mb-4"></div>
+            <p class="text-sm text-slate-500 font-bold uppercase tracking-wider">Carregando dados...</p>
+        </div>
+
+        <!-- Grid Cards -->
+        <div id="processosGrid" class="grid grid-cols-1 lg:grid-cols-2 gap-8 hidden">
+            <!-- Cards will be injected here via JS -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="hidden flex-col items-center justify-center py-24 glass-card rounded-3xl mt-6 border-dashed border-2 border-slate-300/50">
+            <div class="bg-slate-100/50 p-6 rounded-full mb-6 relative">
+                <div class="absolute inset-0 bg-slate-200 rounded-full animate-ping opacity-20"></div>
+                <svg class="h-12 w-12 text-slate-400 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </div>
+            <h3 class="text-2xl font-bold font-heading text-slate-800">Nenhum resultado</h3>
+            <p class="mt-2 text-base text-slate-500 max-w-sm text-center font-medium">Não encontramos nenhum processo com os termos buscados ou a base está vazia.</p>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-auto relative z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 border-t border-slate-200/50">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <p class="text-sm text-slate-500 font-medium">
+                    &copy; 2026 <span class="font-bold text-slate-700">ACTech Systems</span>. Todos os direitos reservados.
+                </p>
+                <div class="flex gap-4 text-sm font-medium text-slate-500">
+                    <span class="flex items-center gap-1.5"><div class="w-2 h-2 rounded-full bg-emerald-400"></div> Sistema Online</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal Editar (Gerenciar) -->
+    <div id="pendenciasModal" class="modal opacity-0 pointer-events-none fixed inset-0 flex items-center justify-center z-50 px-4">
+        <div class="modal-overlay absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" onclick="closeEditModal()"></div>
+        <div class="modal-container bg-white/95 backdrop-blur-2xl w-full max-w-2xl mx-auto rounded-[2rem] shadow-2xl border border-white z-50 overflow-y-auto transform scale-95 opacity-0 transition-all duration-300">
+            <div class="modal-content p-8 text-left relative">
+                <!--Title-->
+                <div class="flex justify-between items-center pb-5 border-b border-slate-100">
+                    <h3 class="text-2xl font-extrabold font-heading text-slate-900 flex items-center gap-3">
+                        <div class="bg-indigo-50 text-indigo-600 p-2.5 rounded-xl border border-indigo-100">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                            </svg>
+                        </div>
+                        Gerenciar Processo
+                    </h3>
+                    <button class="modal-close cursor-pointer z-50 text-slate-400 hover:text-rose-500 bg-slate-50 hover:bg-rose-50 p-2.5 rounded-full transition-colors border border-slate-100 hover:border-rose-100" onclick="closeEditModal()">
+                        <svg class="fill-current w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18">
+                            <path d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <!--Body-->
+                <div class="my-6 space-y-6">
+                    <input type="hidden" id="editProcessoId">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <div>
+                            <label class="text-[11px] font-bold text-slate-400 uppercase tracking-widest block mb-2">Órgão <span class="text-rose-500">*</span></label>
+                            <input type="text" id="editOrgao" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none custom-input shadow-sm placeholder-slate-300" required>
+                        </div>
+                        <div>
+                            <label class="text-[11px] font-bold text-slate-400 uppercase tracking-widest block mb-2">Número do Processo <span class="text-rose-500">*</span></label>
+                            <input type="text" id="editProcessoRef" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm font-mono font-semibold focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none custom-input shadow-sm placeholder-slate-300" required>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="text-[11px] font-bold text-slate-400 uppercase tracking-widest block mb-2">Assunto / Objetivo <span class="text-rose-500">*</span></label>
+                        <input type="text" id="editAssunto" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none custom-input shadow-sm placeholder-slate-300" required>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <div>
+                            <label class="text-[11px] font-bold text-slate-400 uppercase tracking-widest block mb-2">Periodicidade</label>
+                            <input type="text" id="editPeriodicidade" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none custom-input shadow-sm placeholder-slate-300">
+                        </div>
+                        <div>
+                            <label class="text-[11px] font-bold text-slate-400 uppercase tracking-widest block mb-2">Prazo Final</label>
+                            <input type="text" id="editPrazo" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none custom-input shadow-sm placeholder-slate-300">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="text-[11px] font-bold text-slate-400 uppercase tracking-widest block mb-2">Status Atual</label>
+                        <select id="editStatus" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none custom-input shadow-sm appearance-none cursor-pointer">
+                            <option value="Pendente">Pendente / Atenção</option>
+                            <option value="Aguardando Órgão">Aguardando Órgão / Em Andamento</option>
+                            <option value="Concluído">Concluído</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="text-[11px] font-bold text-slate-400 uppercase tracking-widest block mb-2">Pendências / Observações</label>
+                        <textarea id="editPendencias" rows="4" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none resize-y custom-input shadow-sm placeholder-slate-300"></textarea>
+                    </div>
+                </div>
+
+                <!--Footer-->
+                <div class="flex justify-end pt-5 border-t border-slate-100 gap-3">
+                    <button class="px-6 py-3 bg-white border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 hover:text-slate-900 transition-colors font-bold text-sm shadow-sm" onclick="closeEditModal()">
+                        Cancelar
+                    </button>
+                    <button id="btnSaveEdit" class="px-6 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all hover:shadow-[0_8px_20px_-6px_rgba(79,70,229,0.5)] hover:-translate-y-0.5 focus:ring-4 focus:ring-indigo-500/30 font-bold text-sm shadow-md flex items-center gap-2" onclick="saveEdit()">
+                        Salvar Alterações
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Novo Processo -->
+    <div id="newProcessModal" class="modal opacity-0 pointer-events-none fixed inset-0 flex items-center justify-center z-50 px-4">
+        <div class="modal-overlay absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" onclick="closeNewModal()"></div>
+        <div class="modal-container bg-white/95 backdrop-blur-2xl w-full max-w-2xl mx-auto rounded-[2rem] shadow-2xl border border-white z-50 overflow-y-auto transform scale-95 opacity-0 transition-all duration-300 max-h-[90vh]">
+            <div class="modal-content p-8 text-left relative">
+                <!--Title-->
+                <div class="flex justify-between items-center pb-5 border-b border-slate-100">
+                    <h3 class="text-2xl font-extrabold font-heading text-slate-900 flex items-center gap-3">
+                        <div class="bg-indigo-50 text-indigo-600 p-2.5 rounded-xl border border-indigo-100">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                        </div>
+                        Novo Processo
+                    </h3>
+                    <button class="modal-close cursor-pointer z-50 text-slate-400 hover:text-rose-500 bg-slate-50 hover:bg-rose-50 p-2.5 rounded-full transition-colors border border-slate-100 hover:border-rose-100" onclick="closeNewModal()">
+                        <svg class="fill-current w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18">
+                            <path d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <!--Body-->
+                <div class="my-6 space-y-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <div>
+                            <label class="text-[11px] font-bold text-slate-400 uppercase tracking-widest block mb-2">Órgão <span class="text-rose-500">*</span></label>
+                            <input type="text" id="newOrgao" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none custom-input shadow-sm placeholder-slate-300" placeholder="Ex: IBRAM, ADASA..." required>
+                        </div>
+                        <div>
+                            <label class="text-[11px] font-bold text-slate-400 uppercase tracking-widest block mb-2">Número do Processo <span class="text-rose-500">*</span></label>
+                            <input type="text" id="newProcessoRef" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm font-mono font-semibold focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none custom-input shadow-sm placeholder-slate-300" placeholder="Ex: 00391-00021973/2017-46" required>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="text-[11px] font-bold text-slate-400 uppercase tracking-widest block mb-2">Assunto / Objetivo <span class="text-rose-500">*</span></label>
+                        <input type="text" id="newAssunto" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none custom-input shadow-sm placeholder-slate-300" placeholder="Ex: Obtenção de Outorga..." required>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <div>
+                            <label class="text-[11px] font-bold text-slate-400 uppercase tracking-widest block mb-2">Periodicidade</label>
+                            <input type="text" id="newPeriodicidade" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none custom-input shadow-sm placeholder-slate-300" placeholder="Ex: Anual">
+                        </div>
+                        <div>
+                            <label class="text-[11px] font-bold text-slate-400 uppercase tracking-widest block mb-2">Prazo Final</label>
+                            <input type="text" id="newPrazo" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none custom-input shadow-sm placeholder-slate-300" placeholder="Ex: 16/07/2026">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="text-[11px] font-bold text-slate-400 uppercase tracking-widest block mb-2">Status Inicial</label>
+                        <select id="newStatus" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none custom-input shadow-sm appearance-none cursor-pointer">
+                            <option value="Pendente">Pendente / Atenção</option>
+                            <option value="Aguardando Órgão">Aguardando Órgão / Em Andamento</option>
+                            <option value="Concluído">Concluído</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="text-[11px] font-bold text-slate-400 uppercase tracking-widest block mb-2">Pendências / Observações</label>
+                        <textarea id="newPendencias" rows="3" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none resize-y custom-input shadow-sm placeholder-slate-300" placeholder="Adicione as pendências separadas por linha..."></textarea>
+                    </div>
+                </div>
+
+                <!--Footer-->
+                <div class="flex justify-end pt-5 border-t border-slate-100 gap-3">
+                    <button class="px-6 py-3 bg-white border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 hover:text-slate-900 transition-colors font-bold text-sm shadow-sm" onclick="closeNewModal()">
+                        Cancelar
+                    </button>
+                    <button id="btnCreateProcess" class="px-6 py-3 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white rounded-xl hover:from-indigo-700 hover:to-indigo-800 transition-all hover:shadow-[0_8px_20px_-6px_rgba(79,70,229,0.5)] hover:-translate-y-0.5 focus:ring-4 focus:ring-indigo-500/30 font-bold text-sm shadow-md flex items-center gap-2" onclick="createProcesso()">
+                        Adicionar Processo
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variável global para armazenar os processos
+        let processos = [];
+
+        // Mapeamento de DOM
+        const grid = document.getElementById('processosGrid');
+        const loader = document.getElementById('loader');
+        const searchInput = document.getElementById('searchInput');
+        const emptyState = document.getElementById('emptyState');
+        const totalSpan = document.getElementById('totalProcessos');
+        
+        // Modais
+        const editModal = document.getElementById('pendenciasModal');
+        const editModalContainer = editModal.querySelector('.modal-container');
+        const newModal = document.getElementById('newProcessModal');
+        const newModalContainer = newModal.querySelector('.modal-container');
+
+        // Buscar dados da API
+        async function fetchProcessos() {
+            try {
+                const response = await fetch('/api/processos');
+                if (!response.ok) throw new Error('Falha ao buscar dados');
+                processos = await response.json();
+                
+                // Esconder loader e mostrar grid
+                loader.classList.add('hidden');
+                grid.classList.remove('hidden');
+                
+                renderCards(processos);
+            } catch (error) {
+                console.error("Erro ao carregar processos:", error);
+                // Fallback para desenvolvimento local
+                processos = JSON.parse(localStorage.getItem('processos_rk_data') || '[]');
+                loader.classList.add('hidden');
+                grid.classList.remove('hidden');
+                renderCards(processos);
+            }
+        }
+
+        // Mapeamento de Cores para Tags de Status
+        const getStatusConfig = (status) => {
+            const s = (status || "").toLowerCase();
+            if (s.includes('pendente') || s.includes('atenção')) {
+                return {
+                    bg: 'bg-rose-50', text: 'text-rose-700', border: 'border-rose-200', dot: 'bg-rose-500', glow: 'shadow-[0_0_15px_-3px_rgba(244,63,94,0.3)]'
+                };
+            } else if (s.includes('andamento') || s.includes('aguardando')) {
+                return {
+                    bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-200', dot: 'bg-amber-500', glow: 'shadow-[0_0_15px_-3px_rgba(245,158,11,0.3)]'
+                };
+            } else if (s.includes('concluído') || s.includes('verde')) {
+                return {
+                    bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200', dot: 'bg-emerald-500', glow: 'shadow-[0_0_15px_-3px_rgba(16,185,129,0.3)]'
+                };
+            }
+            return {
+                bg: 'bg-slate-50', text: 'text-slate-700', border: 'border-slate-200', dot: 'bg-slate-500', glow: 'shadow-sm'
+            };
+        };
+
+        // Renderização Dinâmica dos Cards
+        const renderCards = (data) => {
+            grid.innerHTML = '';
+
+            const currentTotal = parseInt(totalSpan.textContent);
+            if (currentTotal !== data.length) {
+                totalSpan.classList.add('scale-125', 'shadow-lg');
+                setTimeout(() => totalSpan.classList.remove('scale-125', 'shadow-lg'), 300);
+            }
+            totalSpan.textContent = data.length;
+
+            if (data.length === 0) {
+                grid.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                emptyState.classList.add('flex');
+                return;
+            }
+
+            grid.classList.remove('hidden');
+            emptyState.classList.add('hidden');
+            emptyState.classList.remove('flex');
+
+            data.forEach((item, index) => {
+                const statusConfig = getStatusConfig(item.status);
+                
+                // Trocar \n por espaço para exibir no card truncado
+                const pendenciasText = (item.pendencias || "").replace(/\n/g, ' • ');
+                const truncatedPendencias = pendenciasText.length > 90
+                    ? pendenciasText.substring(0, 90) + '...'
+                    : pendenciasText;
+
+                const card = document.createElement('div');
+                const orgaoStyle = (item.orgao || "").toUpperCase().includes('IBRAM')
+                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200 ring-emerald-500/20'
+                    : 'bg-blue-50 text-blue-700 border-blue-200 ring-blue-500/20';
+
+                card.className = 'glass-card rounded-[2rem] transition-all duration-500 flex flex-col h-full relative group transform hover:-translate-y-2 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.1)] overflow-hidden';
+                card.style.animation = `fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) ${index * 0.1}s both`;
+                
+                card.innerHTML = `
+                    <div class="absolute inset-0 bg-gradient-to-br from-white/80 to-white/30 z-0"></div>
+                    <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-fuchsia-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-0"></div>
+                    
+                    <div class="p-8 flex-grow flex flex-col relative z-10">
+                        <div class="flex justify-between items-start mb-6 gap-2">
+                            <span class="inline-flex items-center px-3.5 py-1.5 rounded-xl text-xs font-black border ${orgaoStyle} shadow-sm ring-2 ring-inset uppercase tracking-widest transition-all">
+                                ${item.orgao}
+                            </span>
+                            <span class="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-xl text-xs font-bold border ${statusConfig.bg} ${statusConfig.text} ${statusConfig.border} ${statusConfig.glow} bg-white/90 backdrop-blur-sm transition-all duration-300">
+                                <span class="relative flex h-2.5 w-2.5">
+                                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full ${statusConfig.dot} opacity-60"></span>
+                                  <span class="relative inline-flex rounded-full h-2.5 w-2.5 ${statusConfig.dot}"></span>
+                                </span>
+                                ${item.status}
+                            </span>
+                        </div>
+                        
+                        <h3 class="text-2xl sm:text-3xl font-extrabold font-heading text-slate-800 leading-tight mb-4 group-hover:text-indigo-600 transition-colors line-clamp-2" title="${item.assunto}">
+                            ${item.assunto}
+                        </h3>
+                        <div class="mb-6">
+                            <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-mono font-bold text-slate-600 bg-slate-100/80 border border-slate-200/80 max-w-full hover:bg-white transition-colors cursor-default shadow-[inset_0_1px_2px_rgba(0,0,0,0.05)]">
+                                <svg class="w-4 h-4 text-indigo-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                                <span class="truncate">${item.processo}</span>
+                            </span>
+                        </div>
+                        
+                        <div class="space-y-6 flex-grow">
+                            <div class="flex flex-col gap-1.5">
+                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                    Periodicidade
+                                </p>
+                                <p class="text-sm font-bold text-slate-700">
+                                    ${item.periodicidade || '-'}
+                                </p>
+                            </div>
+                            
+                            <div class="flex flex-col gap-1.5">
+                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+                                    Ações / Pendências
+                                </p>
+                                <div class="text-sm text-slate-600 bg-white/70 p-4 rounded-2xl border border-white shadow-[0_2px_10px_-3px_rgba(0,0,0,0.02)] group-hover:bg-indigo-50/60 group-hover:border-indigo-100 transition-all relative">
+                                    <p class="line-clamp-2 leading-relaxed font-medium">${truncatedPendencias || 'Sem pendências registradas.'}</p>
+                                    <div class="mt-4 flex gap-2 w-full">
+                                        <button onclick="openEditModal(${item.id})" class="flex-grow inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-slate-200/80 rounded-xl text-indigo-600 hover:bg-indigo-600 hover:text-white hover:border-indigo-600 text-xs font-bold transition-all duration-300 shadow-sm group-hover:shadow-md group-hover:-translate-y-0.5">
+                                            Editar Processo
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                        </button>
+                                        <button onclick="deleteProcesso(${item.id})" class="inline-flex items-center justify-center px-4 py-2.5 bg-white border border-rose-200/80 rounded-xl text-rose-500 hover:bg-rose-500 hover:text-white hover:border-rose-500 transition-all duration-300 shadow-sm group-hover:shadow-md group-hover:-translate-y-0.5" title="Excluir Processo">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-8 pt-6 border-t border-slate-200/60 flex items-center justify-between">
+                            <div class="flex items-center gap-3.5">
+                                <div class="p-2.5 rounded-xl ${(item.prazo || '').includes('Sem prazo') ? 'bg-slate-100 text-slate-400' : 'bg-rose-100 text-rose-500'}">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                </div>
+                                <div class="flex flex-col gap-0.5">
+                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Prazo Final</p>
+                                    <p class="text-base font-extrabold text-slate-800 font-heading tracking-wide">
+                                        ${item.prazo || '-'}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        };
+
+        // --- LÓGICA MODAL EDITAR ---
+        const openEditModal = (id) => {
+            const item = processos.find(p => p.id === id);
+            if (!item) return;
+
+            document.getElementById('editProcessoId').value = item.id;
+            document.getElementById('editOrgao').value = item.orgao || '';
+            document.getElementById('editProcessoRef').value = item.processo || '';
+            document.getElementById('editAssunto').value = item.assunto || '';
+            document.getElementById('editPeriodicidade').value = item.periodicidade || '';
+            document.getElementById('editPrazo').value = item.prazo || '';
+            document.getElementById('editPendencias').value = item.pendencias || '';
+            
+            const select = document.getElementById('editStatus');
+            select.value = "Pendente"; // default fallback
+            Array.from(select.options).forEach(opt => {
+                if(item.status && opt.value.toLowerCase().includes(item.status.toLowerCase().split(' ')[0])) {
+                    select.value = opt.value;
+                }
+            });
+
+            editModal.classList.remove('opacity-0', 'pointer-events-none');
+            setTimeout(() => {
+                editModalContainer.classList.remove('scale-95', 'opacity-0');
+                editModalContainer.classList.add('scale-100', 'opacity-100');
+            }, 10);
+            document.body.classList.add('modal-active');
+        };
+
+        const closeEditModal = () => {
+            editModalContainer.classList.remove('scale-100', 'opacity-100');
+            editModalContainer.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                editModal.classList.add('opacity-0', 'pointer-events-none');
+                document.body.classList.remove('modal-active');
+            }, 300);
+        };
+
+        async function saveEdit() {
+            const id = document.getElementById('editProcessoId').value;
+            
+            const orgao = document.getElementById('editOrgao').value;
+            const processoRef = document.getElementById('editProcessoRef').value;
+            const assunto = document.getElementById('editAssunto').value;
+            
+            if(!orgao || !processoRef || !assunto) {
+                alert("Por favor, preencha Órgão, Número do Processo e Assunto.");
+                return;
+            }
+
+            const updatedData = {
+                orgao: orgao,
+                processo: processoRef,
+                assunto: assunto,
+                periodicidade: document.getElementById('editPeriodicidade').value,
+                prazo: document.getElementById('editPrazo').value,
+                status: document.getElementById('editStatus').value,
+                pendencias: document.getElementById('editPendencias').value
+            };
+            
+            const btn = document.getElementById('btnSaveEdit');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<div class="loader w-4 h-4 border-2 border-t-white border-l-white mr-2" style="border-top-color: transparent"></div> Salvando...';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch(`/api/processos/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updatedData)
+                });
+
+                if (response.ok) {
+                    const updatedItem = await response.json();
+                    const index = processos.findIndex(p => p.id === parseInt(id));
+                    if(index !== -1) processos[index] = updatedItem;
+                    
+                    renderCards(processos);
+                    closeEditModal();
+                } else {
+                    throw new Error("API Falhou");
+                }
+            } catch(e) {
+                // Local update fallback se servidor offline
+                const index = processos.findIndex(p => p.id === parseInt(id));
+                if(index !== -1) {
+                    processos[index] = { ...processos[index], ...updatedData };
+                    localStorage.setItem('processos_rk_data', JSON.stringify(processos));
+                }
+                renderCards(processos);
+                closeEditModal();
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        async function deleteProcesso(id) {
+            if(!confirm("Tem certeza que deseja excluir este processo permanentemente?")) return;
+            
+            try {
+                const response = await fetch(`/api/processos/${id}`, { method: 'DELETE' });
+                if(response.ok) {
+                    processos = processos.filter(p => p.id !== id);
+                    renderCards(processos);
+                } else {
+                    throw new Error("API Falhou");
+                }
+            } catch(e) {
+                processos = processos.filter(p => p.id !== id);
+                localStorage.setItem('processos_rk_data', JSON.stringify(processos));
+                renderCards(processos);
+            }
+        }
+
+        // --- LÓGICA MODAL NOVO PROCESSO ---
+        const openNewModal = () => {
+            document.getElementById('newOrgao').value = '';
+            document.getElementById('newProcessoRef').value = '';
+            document.getElementById('newAssunto').value = '';
+            document.getElementById('newPeriodicidade').value = '';
+            document.getElementById('newPrazo').value = '';
+            document.getElementById('newPendencias').value = '';
+            document.getElementById('newStatus').value = 'Pendente';
+
+            newModal.classList.remove('opacity-0', 'pointer-events-none');
+            setTimeout(() => {
+                newModalContainer.classList.remove('scale-95', 'opacity-0');
+                newModalContainer.classList.add('scale-100', 'opacity-100');
+            }, 10);
+            document.body.classList.add('modal-active');
+        };
+
+        const closeNewModal = () => {
+            newModalContainer.classList.remove('scale-100', 'opacity-100');
+            newModalContainer.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                newModal.classList.add('opacity-0', 'pointer-events-none');
+                document.body.classList.remove('modal-active');
+            }, 300);
+        };
+
+        async function createProcesso() {
+            const orgao = document.getElementById('newOrgao').value;
+            const processo = document.getElementById('newProcessoRef').value;
+            const assunto = document.getElementById('newAssunto').value;
+            
+            if(!orgao || !processo || !assunto) {
+                alert("Por favor, preencha Órgão, Número do Processo e Assunto.");
+                return;
+            }
+
+            const newId = processos.length > 0 ? Math.max(...processos.map(p => p.id)) + 1 : 1;
+
+            const novoProcesso = {
+                id: newId,
+                orgao: orgao,
+                processo: processo,
+                assunto: assunto,
+                periodicidade: document.getElementById('newPeriodicidade').value,
+                prazo: document.getElementById('newPrazo').value,
+                status: document.getElementById('newStatus').value,
+                pendencias: document.getElementById('newPendencias').value
+            };
+
+            const btn = document.getElementById('btnCreateProcess');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<div class="loader w-4 h-4 border-2 border-t-white border-l-white mr-2" style="border-top-color: transparent"></div> Adicionando...';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch('/api/processos', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(novoProcesso)
+                });
+                
+                if(response.ok) {
+                    processos.push(novoProcesso);
+                    renderCards(processos);
+                    closeNewModal();
+                    searchInput.value = '';
+                } else {
+                    throw new Error("API failed");
+                }
+            } catch(e) {
+                // Local storage fallback
+                processos.push(novoProcesso);
+                localStorage.setItem('processos_rk_data', JSON.stringify(processos));
+                renderCards(processos);
+                closeNewModal();
+                searchInput.value = '';
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
+
+        // Fechar modal com a tecla ESC
+        document.addEventListener('keydown', function (event) {
+            if (event.key === "Escape") {
+                if (!editModal.classList.contains('opacity-0')) closeEditModal();
+                if (!newModal.classList.contains('opacity-0')) closeNewModal();
+            }
+        });
+
+        // Evento da Barra de Busca
+        searchInput.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            const filtered = processos.filter(p =>
+                (p.processo || "").toLowerCase().includes(term) ||
+                (p.assunto || "").toLowerCase().includes(term) ||
+                (p.orgao || "").toLowerCase().includes(term) ||
+                (p.status || "").toLowerCase().includes(term) ||
+                (p.pendencias || "").toLowerCase().includes(term) ||
+                (p.prazo || "").toLowerCase().includes(term)
+            );
+            renderCards(filtered);
+        });
+
+        // Inject Keyframes styles for animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(20px) scale(0.98); }
+                to { opacity: 1; transform: translateY(0) scale(1); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Inicialização Principal
+        fetchProcessos();
+    </script>
+</body>
+</html>
