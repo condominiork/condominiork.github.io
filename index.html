@@ -374,12 +374,37 @@
         const newModal = document.getElementById('newProcessModal');
         const newModalContainer = newModal.querySelector('.modal-container');
 
-        // Buscar dados da API
+        // Buscar dados da API ou JSON estático
         async function fetchProcessos() {
             try {
-                const response = await fetch('/api/processos');
-                if (!response.ok) throw new Error('Falha ao buscar dados');
+                // Primeiro, verifica se há dados salvos no navegador (se o usuário já fez edições no GitHub Pages)
+                const localData = localStorage.getItem('processos_rk_data');
+                if (localData) {
+                    const parsedData = JSON.parse(localData);
+                    if (parsedData.length > 0) {
+                        processos = parsedData;
+                        loader.classList.add('hidden');
+                        grid.classList.remove('hidden');
+                        renderCards(processos);
+                        return;
+                    }
+                }
+
+                // Se não houver dados locais, tenta buscar da API (local) ou do arquivo dados.json (GitHub Pages)
+                let response;
+                try {
+                    response = await fetch('/api/processos');
+                    if (!response.ok) throw new Error('API não encontrada');
+                } catch (e) {
+                    console.log("Tentando carregar dados.json (modo estático)...");
+                    response = await fetch('./dados.json');
+                    if (!response.ok) throw new Error('dados.json não encontrado');
+                }
+
                 processos = await response.json();
+                
+                // Salva no localStorage para as próximas visitas
+                localStorage.setItem('processos_rk_data', JSON.stringify(processos));
                 
                 // Esconder loader e mostrar grid
                 loader.classList.add('hidden');
@@ -388,8 +413,7 @@
                 renderCards(processos);
             } catch (error) {
                 console.error("Erro ao carregar processos:", error);
-                // Fallback para desenvolvimento local
-                processos = JSON.parse(localStorage.getItem('processos_rk_data') || '[]');
+                processos = [];
                 loader.classList.add('hidden');
                 grid.classList.remove('hidden');
                 renderCards(processos);
